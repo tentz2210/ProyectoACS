@@ -1,0 +1,58 @@
+﻿@page "/menu"
+
+@using ProyPlanilla.Data
+
+<h3>Menu Principal</h3>
+
+@if (timerOn) 
+{
+    <button disabled>Generar reporte</button>
+}
+else 
+{
+    <button @onclick="generarReporte">Generar reporte</button>
+}
+
+
+<p> @estado </p>
+@if (showTimer) 
+{ 
+    <p>Tiempo(s): @timer</p>
+}
+
+@code {
+    private String estado = "";
+
+    private bool timerOn = false;
+
+    private bool showTimer = false;
+
+    private int timer = 0;
+
+    private AdmPlanilla admPlanilla = new AdmPlanilla();
+
+    // resetear e iniciar timer de generacion de reporte
+    private async void StartTimerAsync()
+    {
+        showTimer = true;
+        timerOn = true;
+        timer = 0;
+        while (timerOn)
+        {
+            await Task.Delay(1000);
+            timer++;
+            StateHasChanged();
+        }
+    }
+
+    private async void generarReporte()
+    {
+        estado = "Generando reporte...";
+        StateHasChanged();
+        StartTimerAsync();
+        await admPlanilla.generarReporteAsync();
+        estado = "Reporte generado.";
+        timerOn = false;
+        StateHasChanged();
+    }
+}
